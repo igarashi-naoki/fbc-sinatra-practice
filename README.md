@@ -5,12 +5,9 @@
 1. 本リポジトリを任意のディレクトリにcloneします。
 
 ```shell
-git clone  git@github.com:igarashi-naoki/fbc-sinatra-practice.git
-```
-
-```shell
 git clone git@github.com:igarashi-naoki/fbc-sinatra-practice.git
 ```
+branch状況に応じて、以下オプションを用いてbranchを指定してください。
 ```shell
 -b add_main_code
 ```
