@@ -8,8 +8,6 @@ at_exit do
   Memo.read
 end
 
-set :default_content_type, 'text/html;charset=shift-jis'
-
 ['/', '/index', '/memos'].each do |route|
   get route  do
     @memos = Memo.memos
@@ -22,7 +20,7 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  Memo.new(title: h(params[:title]), body: h(params[:body]))
+  Memo.new(title: params[:title], body: params[:body])
   Memo.save
   redirect '/memos'
 end
@@ -38,7 +36,7 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  Memo.memos[params[:id]].update(title: h(params[:title]), body: h(params[:body]))
+  Memo.memos[params[:id]].update(title: params[:title], body: params[:body])
   Memo.save
   redirect '/memos'
 end
@@ -51,10 +49,4 @@ end
 
 not_found do
   erb :not_found
-end
-
-helpers do
-  def h(text)
-    Rack::Utils.escape_html(text)
-  end
 end
