@@ -22,7 +22,7 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  Memo.new(title: h(params[:title]), body: h(params[:body]))
+  Memo.new(title: params[:title], body: params[:body])
   Memo.save
   redirect '/memos'
 end
@@ -38,7 +38,7 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  Memo.memos[params[:id]].update(title: h(params[:title]), body: h(params[:body]))
+  Memo.memos[params[:id]].update(title: params[:title], body: params[:body])
   Memo.save
   redirect '/memos'
 end

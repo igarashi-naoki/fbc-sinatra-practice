@@ -1,8 +1,8 @@
 <h2>タイトル</h2>
-<p><%= @memo.title %></p>
+<p><%= h @memo.title %></p>
 
 <h2>本文</h2>
-<p><%= @memo.body %></p>
+<p><%= h @memo.body %></p>
 
 <button type=“button” onclick="location.href='/memos/<%= params[:id] %>/edit'">変更</button>
 <div class="delete">
