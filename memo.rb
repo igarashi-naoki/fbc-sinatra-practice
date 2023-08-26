@@ -6,39 +6,32 @@ DATA_FILE = 'memo_data.json'
 
 # メモに関するデータをやりとりするクラスです
 class Memo
-  attr_reader :id, :title, :body
+  attr_reader :title, :body
 
-  @memos = {}
   class << self
-    attr_reader :memos
-
-    def read
+    def load_all
       File.new(DATA_FILE, 'w') unless File.exist?(DATA_FILE)
-
-      JSON.parse(File.open(DATA_FILE).read, symbolize_names: true).each do |id, v|
-        Memo.new(**v, id: id)
-      end
+      # jsonファイルから　{:id => Memoインスタンス, ..} のハッシュを返す
+      JSON.parse(File.open(DATA_FILE).read, symbolize_names: true).transform_values { |v| Memo.new(**v) }
     rescue JSON::ParserError
-      nil
+      []
     end
 
-    # memoのidの最大値+1を次に付与するIDとする
+    # memoのidの最大値+1を次に付与するeIDとする
     def next_id
-      @memos.keys.max_by(&:to_i).to_i + 1
+      # (load_all.keys.max_by(&:to_i).to_i + 1).to_s.to_sym
+      '100'.to_sym
     end
 
-    def save
-      save_json = @memos.transform_values(&:to_hash)
+    def save(memos)
+      save_json = memos.transform_values(&:to_hash)
       File.write(DATA_FILE, JSON.pretty_generate(save_json), mode: 'w')
     end
   end
 
-  def initialize(title:, body:, id: nil)
+  def initialize(title:, body:)
     @title = title
     @body = body
-    memo_id = self.class.next_id
-    memo_id = id unless id.nil? # データから
-    Memo.instance_variable_get(:@memos)[memo_id.to_s] = self
   end
 
   def update(title:, body:)
