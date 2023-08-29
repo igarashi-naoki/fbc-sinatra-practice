@@ -20,7 +20,7 @@ end
 
 post '/memos' do
   memos = Memo.load_all
-  memos[uuid(memos).to_sym] = Memo.new(title: params[:title], body: params[:body])
+  memos[SecureRandom.uuid.to_sym] = Memo.new(title: params[:title], body: params[:body])
   Memo.save(memos)
   redirect '/memos'
 end
@@ -56,12 +56,5 @@ end
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
-  end
-
-  def uuid(memos)
-    loop do
-      uuid = SecureRandom.uuid
-      return uuid unless memos.include?(uuid)
-    end
   end
 end
