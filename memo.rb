@@ -34,8 +34,6 @@ class Memo
   end
 
   def to_hash
-    instance_variables.map do |instance_var|
-      [instance_var.to_s.delete('@'), instance_variable_get(instance_var)]
-    end.to_h
+    { title: @title, body: @body }
   end
 end
