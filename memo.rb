@@ -17,12 +17,6 @@ class Memo
       []
     end
 
-    # memoのidの最大値+1を次に付与するeIDとする
-    def next_id
-      # (load_all.keys.max_by(&:to_i).to_i + 1).to_s.to_sym
-      '100'.to_sym
-    end
-
     def save(memos)
       save_json = memos.transform_values(&:to_hash)
       File.write(DATA_FILE, JSON.pretty_generate(save_json), mode: 'w')
