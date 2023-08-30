@@ -14,7 +14,7 @@ class Memo
       # jsonファイルから　{:id => Memoインスタンス, ..} のハッシュを返す
       JSON.parse(File.open(DATA_FILE).read, symbolize_names: true).transform_values { |v| Memo.new(**v) }
     rescue JSON::ParserError
-      []
+      {}
     end
 
     def save(memos)
