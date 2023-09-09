@@ -1,0 +1,21 @@
+<h2><%= h @memo.title %>を編集</h2>
+
+    <form action="/memos/<%= params[:id] %>" method="post">
+        <input type="hidden" name="_method" value="patch">
+
+        <div>
+            <label for="title">タイトル</label>
+        </div>
+        <div>
+            <input type="text" id="title" name="title" value="<%= h @memo.title %>" required>
+        </div>
+
+        <div>
+            <label for="body">本文</label>
+        </div>
+        <div>
+            <textarea type="text" id="body" name="body" required><%= h @memo.body %></textarea>
+        </div>
+
+        <input type="submit" value="変更を保存" class="button">
+    </form>
