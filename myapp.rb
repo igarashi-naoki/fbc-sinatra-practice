@@ -9,7 +9,10 @@ set :default_content_type, 'text/html;charset=utf-8'
 
 ['/', '/index', '/memos'].each do |route|
   get route  do
-    @memos = Memo.load_all
+    @memos = {}
+    Memo.read_all.each do |row|
+      @memos[row['memo_id']] = Memo.new(title: row['title'], body: row['body'])
+    end
     erb :index
   end
 end
@@ -19,33 +22,29 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memos = Memo.load_all
-  memos[SecureRandom.uuid.to_sym] = Memo.new(title: params[:title], body: params[:body])
-  Memo.save(memos)
+  Memo.create(memo_id: SecureRandom.uuid, title: params[:title], body: params[:body])
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  @memo = Memo.load_all[params[:id].to_sym]
+  rows = Memo.read(memo_id: params[:id])
+  @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = Memo.load_all[params[:id].to_sym]
+  rows = Memo.read(memo_id: params[:id])
+  @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = Memo.load_all
-  memos[params[:id].to_sym].update(title: params[:title], body: params[:body])
-  Memo.save(memos)
+  Memo.update(memo_id: params[:id], title: params[:title], body: params[:body])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  memos = Memo.load_all
-  memos.delete(params[:id].to_sym)
-  Memo.save(memos)
+  Memo.delete(memo_id: params[:id])
   redirect '/memos'
 end
 
@@ -57,4 +56,8 @@ helpers do
   def h(text)
     Rack::Utils.escape_html(text)
   end
+end
+
+configure do
+  Memo.connect_db
 end
