@@ -2,7 +2,6 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'securerandom'
 require_relative './memo'
 
 set :default_content_type, 'text/html;charset=utf-8'

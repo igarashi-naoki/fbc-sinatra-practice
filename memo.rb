@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'pg'
-
-DATA_FILE = 'memo_data.json'
 
 # メモに関するデータをやりとりするクラスです
 class Memo
