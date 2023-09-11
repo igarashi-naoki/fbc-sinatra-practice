@@ -12,20 +12,20 @@ class Memo
   @db_connect = nil
 
   class << self
-    def create(memo_id:, title:, body:)
-      @db_connect.exec_params('INSERT INTO memos(memo_id,title,body) values($1,$2,$3);', [memo_id, title, body])
+    def create(title:, body:)
+      @db_connect.exec_params('INSERT INTO memos(title,body) values($1,$2);', [title, body])
     end
 
-    def read(memo_id:)
-      @db_connect.exec_params('SELECT * FROM memos WHERE memo_id = $1;', [memo_id])
+    def read(id:)
+      @db_connect.exec_params('SELECT * FROM memos WHERE id = $1;', [id])
     end
 
-    def update(memo_id:, title:, body:)
-      @db_connect.exec_params('UPDATE memos SET title = $2, body = $3 WHERE memo_id = $1;', [memo_id, title, body])
+    def update(id:, title:, body:)
+      @db_connect.exec_params('UPDATE memos SET title = $2, body = $3 WHERE id = $1;', [id, title, body])
     end
 
-    def delete(memo_id:)
-      @db_connect.exec_params('DELETE FROM memos WHERE memo_id = $1;', [memo_id])
+    def delete(id:)
+      @db_connect.exec_params('DELETE FROM memos WHERE id = $1;', [id])
     end
 
     def connect_db

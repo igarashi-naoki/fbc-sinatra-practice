@@ -11,7 +11,7 @@ set :default_content_type, 'text/html;charset=utf-8'
   get route  do
     @memos = {}
     Memo.read_all.each do |row|
-      @memos[row['memo_id']] = Memo.new(title: row['title'], body: row['body'])
+      @memos[row['id']] = Memo.new(title: row['title'], body: row['body'])
     end
     erb :index
   end
@@ -22,31 +22,31 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  Memo.create(memo_id: SecureRandom.uuid, title: params[:title], body: params[:body])
+  Memo.create(title: params[:title], body: params[:body])
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  rows = Memo.read(memo_id: params[:id])
+  rows = Memo.read(id: params[:id])
   redirect not_found if rows.num_tuples.zero?
   @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
   erb :show
 end
 
 get '/memos/:id/edit' do
-  rows = Memo.read(memo_id: params[:id])
+  rows = Memo.read(id: params[:id])
   redirect not_found if rows.num_tuples.zero?
   @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
   erb :edit
 end
 
 patch '/memos/:id' do
-  Memo.update(memo_id: params[:id], title: params[:title], body: params[:body])
+  Memo.update(id: params[:id], title: params[:title], body: params[:body])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  Memo.delete(memo_id: params[:id])
+  Memo.delete(id: params[:id])
   redirect '/memos'
 end
 
