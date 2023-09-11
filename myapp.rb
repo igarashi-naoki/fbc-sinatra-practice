@@ -28,12 +28,14 @@ end
 
 get '/memos/:id' do
   rows = Memo.read(memo_id: params[:id])
+  redirect not_found if rows.num_tuples.zero?
   @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
   erb :show
 end
 
 get '/memos/:id/edit' do
   rows = Memo.read(memo_id: params[:id])
+  redirect not_found if rows.num_tuples.zero?
   @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
   erb :edit
 end
