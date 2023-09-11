@@ -33,7 +33,7 @@ class Memo
     end
 
     def read_all
-      @db_connect.exec('SELECT * FROM memos')
+      @db_connect.exec('SELECT * FROM memos ORDER BY created_at DESC;')
     end
   end
 
