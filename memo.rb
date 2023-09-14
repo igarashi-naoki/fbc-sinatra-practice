@@ -29,17 +29,16 @@ class Memo
     def connect_db
       @db_connect = PG.connect(dbname: 'memo_app')
 
-      @db_connect.exec('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       # memosテーブルが存在しなければ自動で作成する
       @db_connect.exec("SELECT 1 FROM #{@table_name} LIMIT 1;")
     rescue PG::UndefinedTable
       @db_connect.exec("CREATE TABLE #{@table_name}(
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          title VARCHAR(200) NOT NULL,
-          body TEXT NOT NULL,
-          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
-        );")
-    end
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        body TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+      );")
+      end
 
     def read_all
       @db_connect.exec("SELECT * FROM #{@table_name} ORDER BY created_at DESC;")
