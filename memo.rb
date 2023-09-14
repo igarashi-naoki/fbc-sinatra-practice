@@ -38,7 +38,7 @@ class Memo
         body TEXT NOT NULL,
         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
       );")
-      end
+    end
 
     def read_all
       @db_connect.exec("SELECT * FROM #{@table_name} ORDER BY created_at DESC;")
