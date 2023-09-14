@@ -29,6 +29,7 @@ class Memo
     def connect_db
       @db_connect = PG.connect(dbname: 'memo_app')
 
+      @db_connect.exec('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
       # memosテーブルが存在しなければ自動で作成する
       @db_connect.exec("SELECT 1 FROM #{@table_name} LIMIT 1;")
     rescue PG::UndefinedTable
