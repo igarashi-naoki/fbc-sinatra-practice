@@ -2,14 +2,13 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'securerandom'
 require_relative './memo'
 
 set :default_content_type, 'text/html;charset=utf-8'
 
 ['/', '/index', '/memos'].each do |route|
   get route  do
-    @memos = Memo.load_all
+    @memos = Memo.read_all
     erb :index
   end
 end
@@ -19,33 +18,29 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memos = Memo.load_all
-  memos[SecureRandom.uuid.to_sym] = Memo.new(title: params[:title], body: params[:body])
-  Memo.save(memos)
+  Memo.create(title: params[:title], body: params[:body])
   redirect '/memos'
 end
 
 get '/memos/:id' do
-  @memo = Memo.load_all[params[:id].to_sym]
+  @memo = Memo.read(id: params[:id])
+  redirect not_found if @memo.nil?
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = Memo.load_all[params[:id].to_sym]
+  @memo = Memo.read(id: params[:id])
+  redirect not_found if @memo.nil?
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = Memo.load_all
-  memos[params[:id].to_sym].update(title: params[:title], body: params[:body])
-  Memo.save(memos)
+  Memo.update(id: params[:id], title: params[:title], body: params[:body])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  memos = Memo.load_all
-  memos.delete(params[:id].to_sym)
-  Memo.save(memos)
+  Memo.delete(id: params[:id])
   redirect '/memos'
 end
 
@@ -57,4 +52,8 @@ helpers do
   def h(text)
     Rack::Utils.escape_html(text)
   end
+end
+
+configure do
+  Memo.connect_db
 end
