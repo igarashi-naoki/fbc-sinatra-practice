@@ -8,10 +8,7 @@ set :default_content_type, 'text/html;charset=utf-8'
 
 ['/', '/index', '/memos'].each do |route|
   get route  do
-    @memos = {}
-    Memo.read_all.each do |row|
-      @memos[row['id']] = Memo.new(title: row['title'], body: row['body'])
-    end
+    @memos = Memo.read_all
     erb :index
   end
 end
@@ -26,16 +23,14 @@ post '/memos' do
 end
 
 get '/memos/:id' do
-  rows = Memo.read(id: params[:id])
-  redirect not_found if rows.num_tuples.zero?
-  @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
+  @memo = Memo.read(id: params[:id])
+  redirect not_found if @memo.nil?
   erb :show
 end
 
 get '/memos/:id/edit' do
-  rows = Memo.read(id: params[:id])
-  redirect not_found if rows.num_tuples.zero?
-  @memo = Memo.new(title: rows[0]['title'], body: rows[0]['body'])
+  @memo = Memo.read(id: params[:id])
+  redirect not_found if @memo.nil?
   erb :edit
 end
 

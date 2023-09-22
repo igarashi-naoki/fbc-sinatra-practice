@@ -2,37 +2,41 @@
 
 require 'pg'
 
+TABLE_NAME = 'memos'
+
 # メモに関するデータをやりとりするクラスです
 class Memo
   attr_reader :title, :body
 
-  @db_connect = nil
-  @table_name = 'memos'
+  @db_connection = nil
 
   class << self
     def create(title:, body:)
-      @db_connect.exec_params("INSERT INTO #{@table_name}(title,body) values($1,$2);", [title, body])
+      @db_connection.exec_params("INSERT INTO #{TABLE_NAME}(title,body) values($1,$2);", [title, body])
     end
 
     def read(id:)
-      @db_connect.exec_params("SELECT * FROM #{@table_name} WHERE id = $1;", [id])
+      row = @db_connection.exec_params("SELECT * FROM #{TABLE_NAME} WHERE id = $1 LIMIT 1;", [id])
+      return nil if row.count.zero?
+
+      Memo.new(title: row[0]['title'], body: row[0]['body'])
     end
 
     def update(id:, title:, body:)
-      @db_connect.exec_params("UPDATE #{@table_name} SET title = $2, body = $3 WHERE id = $1;", [id, title, body])
+      @db_connection.exec_params("UPDATE #{TABLE_NAME} SET title = $2, body = $3 WHERE id = $1;", [id, title, body])
     end
 
     def delete(id:)
-      @db_connect.exec_params("DELETE FROM #{@table_name} WHERE id = $1;", [id])
+      @db_connection.exec_params("DELETE FROM #{TABLE_NAME} WHERE id = $1;", [id])
     end
 
     def connect_db
-      @db_connect = PG.connect(dbname: 'memo_app')
+      @db_connection = PG.connect(dbname: 'memo_app')
 
       # memosテーブルが存在しなければ自動で作成する
-      @db_connect.exec("SELECT 1 FROM #{@table_name} LIMIT 1;")
+      @db_connection.exec("SELECT 1 FROM #{TABLE_NAME} LIMIT 1;")
     rescue PG::UndefinedTable
-      @db_connect.exec("CREATE TABLE #{@table_name}(
+      @db_connection.exec("CREATE TABLE #{TABLE_NAME}(
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
         title VARCHAR(200) NOT NULL,
         body TEXT NOT NULL,
@@ -41,7 +45,10 @@ class Memo
     end
 
     def read_all
-      @db_connect.exec("SELECT * FROM #{@table_name} ORDER BY created_at DESC;")
+      rows = @db_connection.exec("SELECT * FROM #{TABLE_NAME} ORDER BY created_at DESC;")
+      rows.each_with_object({}) do |row, memos|
+        memos[row['id']] = Memo.new(title: row['title'], body: row['body'])
+      end
     end
   end
 
